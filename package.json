@@ -1,0 +1,23 @@
+{
+  "name": "tyrion",
+  "version": "0.0.1",
+  "description": "Agent and device for Imp-IO",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:rwaldron/tyrion.git"
+  },
+  "dependencies": {
+    "request": "latest"
+  },
+  "keywords": [
+    "Electric",
+    "imp"
+  ],
+  "author": "Rick Waldron",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rwaldron/tyrion/issues"
+  },
+  "homepage": "https://github.com/rwaldron/tyrion"
+}
