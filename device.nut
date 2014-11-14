@@ -16,9 +16,6 @@ MODES <- [
   PWM_OUT
 ];
 
-pins <- array(32, null);
-states <- array(32, null);
-
 commands <- array(256, null);
 commands[0xF4] = "PIN_MODE";
 commands[0xE0] = "ANALOG_WRITE";
@@ -183,6 +180,7 @@ class Pin {
 function pinMode(pin, mode) {
   local name = "pin" + pin;
   local impMode = MODES[mode];
+  local config;
 
   if (pins[pin] != null) {
     if (pins[pin].mode != mode) {
@@ -197,7 +195,7 @@ function pinMode(pin, mode) {
 
     if (pins[pin] != null) {
       if (impMode == PWM_OUT) {
-        local config = Pwm.config[Pwm.index(mode)];
+        config = Pwm.config[Pwm.index(mode)];
 
         pins[pin].configure(impMode, config.period, config.duty);
       } else {
@@ -206,6 +204,8 @@ function pinMode(pin, mode) {
     }
   }
 }
+
+pins <- array(32, null);
 
 
 agent.on("report", function(data) {
