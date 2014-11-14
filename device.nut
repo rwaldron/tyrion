@@ -27,7 +27,6 @@ commands[0x90] = "DIGITAL_WRITE";
 commands[0xC0] = "REPORT_ANALOG";
 commands[0xD0] = "REPORT_DIGITAL";
 commands[0xFF] = "SYSTEM_RESET";
-commands[0xFF] = "SYSTEM_RESET";
 
 periods <- [
   { period = 0.0025, duty = 0.0 },
@@ -58,9 +57,8 @@ agent.on("data", function(data) {
       pinMode(pin, MODES[mode]);
 
       if (mode == 3 || mode == 4) {
-        setupPwm(pin, mode);
+        pwmSetup(pin, mode);
       }
-
       break;
 
     case ANALOG_WRITE:
@@ -133,7 +131,7 @@ function digitalWrite(pin, value) {
 function analogWrite(pin, value) {
   if (pins[pin] == null) {
     pinMode(pin, MODES[3]);
-    setupPwm(pin, 3);
+    pwmSetup(pin, 3);
   }
 
   pins[pin].write(scale(value, 0.0, 255.0, 0.0, 1.0));
@@ -144,7 +142,7 @@ function analogWrite(pin, value) {
 function servoWrite(pin, value) {
   if (pins[pin] == null) {
     pinMode(pin, MODES[4]);
-    setupPwm(pin, 4);
+    pwmSetup(pin, 4);
   }
   // - check pin is configured
   //    - mode: pwm, servo (3, 4)
@@ -162,7 +160,7 @@ function scale(value, fromLow, fromHigh, toLow, toHigh) {
     (fromHigh - fromLow) + toLow;
 }
 
-function setupPwm(pin, mode) {
+function pwmSetup(pin, mode) {
   local index = pwmIndex(mode);
   pins[pin].configure(
     MODES[mode], periods[index].period, periods[index].duty
