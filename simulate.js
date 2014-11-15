@@ -1,5 +1,5 @@
 var request = require("request");
-var remote = "https://agent.electricimp.com/" + process.env.IMP_DEVICE;
+var remote = "https://agent.electricimp.com/" + process.env.IMP_AGENT;
 var payloads = [
   // SYSTEM_RESET (command: 208)
   [255],
