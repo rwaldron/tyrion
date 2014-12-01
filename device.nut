@@ -234,34 +234,39 @@ agent.on("report", function(data) {
   }
 });
 
-agent.on("payload", function(data) {
-  local bytes = toBytes(data);
-  local command = bytes[0];
-  local pin = bytes.len() >= 2 ? bytes[1] : null;
+agent.on("payload", function(rawdata) {
+  local dataArray = toArray(rawdata);
 
-  if (command in commands) {
-    server.log(hardware.millis() + " " + commands[command]);
+  foreach(idx, data in dataArray) {
+    local bytes = toBytes(data);
+    local command = bytes[0];
+    local pin = bytes.len() >= 2 ? bytes[1] : null;
+
+      if (command in commands) {
+        server.log(hardware.millis() + " " + commands[command]);
+      }
+
+      switch (command) {
+        case PIN_MODE:
+          pinMode(pin, bytes[2]);
+          break;
+
+        case ANALOG_WRITE:
+        case SERVO_WRITE:
+        case DIGITAL_WRITE:
+          Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
+          break;
+
+        case SYSTEM_RESET:
+          systemReset();
+          break;
+
+        default:
+          // server.log("hit default, likely an invalid command");
+          server.log("-----------------------------------------");
+      }
   }
 
-  switch (command) {
-    case PIN_MODE:
-      pinMode(pin, bytes[2]);
-      break;
-
-    case ANALOG_WRITE:
-    case SERVO_WRITE:
-    case DIGITAL_WRITE:
-      Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
-      break;
-
-    case SYSTEM_RESET:
-      systemReset();
-      break;
-
-    default:
-      // server.log("hit default, likely an invalid command");
-      server.log("-----------------------------------------");
-  }
 });
 
 function systemReset() {
@@ -298,6 +303,10 @@ function toBytes(data) {
   return split(data, ",").map(function(value) {
     return value.tointeger();
   });
+}
+
+function toArray(data) {
+  return split(data, "|");
 }
 
 function join(array, separator) {
