@@ -211,13 +211,13 @@ pins <- array(32, null);
 agent.on("report", function(rawdata) {
   local dataArray = toArray(rawdata);
 
-  foreach(idx, data in dataArray) {
+  foreach (idx, data in dataArray) {
     local bytes = toBytes(data);
     local command;
     local pin;
 
     if (bytes.len() != 2) {
-        return;
+      return;
     }
 
     command = bytes[0];
@@ -227,7 +227,7 @@ agent.on("report", function(rawdata) {
 
     // If this pin hasn't been configured yet...
     if (pins[pin] == null) {
-        pinMode(pin, Command.toMode(command));
+      pinMode(pin, Command.toMode(command));
     }
 
     Reporting.pins.append(pins[pin]);
@@ -242,7 +242,7 @@ agent.on("report", function(rawdata) {
 agent.on("payload", function(rawdata) {
   local dataArray = toArray(rawdata);
 
-  foreach(idx, data in dataArray) {
+  foreach (idx, data in dataArray) {
     local bytes = toBytes(data);
     local command = bytes[0];
     local pin = bytes.len() >= 2 ? bytes[1] : null;
@@ -277,7 +277,7 @@ function systemReset() {
   // Enable blinkup while resetting.
   imp.enableblinkup(true);
 
-  foreach(index, pin in pins) {
+  foreach (index, pin in pins) {
     if (pin != null) {
       // Set pin to output and low
       pin.configure(DIGITAL_OUT);
