@@ -210,6 +210,7 @@ pins <- array(32, null);
 
 agent.on("report", function(rawdata) {
   local dataArray = toArray(rawdata);
+
   foreach(idx, data in dataArray) {
     local bytes = toBytes(data);
     local command;
