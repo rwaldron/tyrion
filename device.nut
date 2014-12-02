@@ -247,31 +247,30 @@ agent.on("payload", function(rawdata) {
     local command = bytes[0];
     local pin = bytes.len() >= 2 ? bytes[1] : null;
 
-      if (command in commands) {
-        server.log(hardware.millis() + " " + commands[command]);
-      }
+    if (command in commands) {
+      server.log(hardware.millis() + " " + commands[command]);
+    }
 
-      switch (command) {
-        case PIN_MODE:
-          pinMode(pin, bytes[2]);
-          break;
+    switch (command) {
+      case PIN_MODE:
+        pinMode(pin, bytes[2]);
+        break;
 
-        case ANALOG_WRITE:
-        case SERVO_WRITE:
-        case DIGITAL_WRITE:
-          Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
-          break;
+      case ANALOG_WRITE:
+      case SERVO_WRITE:
+      case DIGITAL_WRITE:
+        Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
+        break;
 
-        case SYSTEM_RESET:
-          systemReset();
-          break;
+      case SYSTEM_RESET:
+        systemReset();
+        break;
 
-        default:
-          // server.log("hit default, likely an invalid command");
-          server.log("-----------------------------------------");
-      }
+      default:
+        // server.log("hit default, likely an invalid command");
+        server.log("-----------------------------------------");
+    }
   }
-
 });
 
 function systemReset() {
