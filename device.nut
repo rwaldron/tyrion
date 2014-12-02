@@ -208,26 +208,30 @@ function pinMode(pin, mode) {
 pins <- array(32, null);
 
 
-agent.on("report", function(data) {
-  local bytes = toBytes(data);
-  local command;
-  local pin;
+agent.on("report", function(rawdata) {
+  local dataArray = toArray(rawdata);
+  foreach(idx, data in dataArray) {
+    local bytes = toBytes(data);
+    local command;
+    local pin;
 
-  if (bytes.len() != 2) {
-    return;
+    if (bytes.len() != 2) {
+        return;
+    }
+
+    command = bytes[0];
+    pin = bytes[1];
+
+    // server.log("report: " + command + " " + pin);
+
+    // If this pin hasn't been configured yet...
+    if (pins[pin] == null) {
+        pinMode(pin, Command.toMode(command));
+    }
+
+    Reporting.pins.append(pins[pin]);
+
   }
-
-  command = bytes[0];
-  pin = bytes[1];
-
-  // server.log("report: " + command + " " + pin);
-
-  // If this pin hasn't been configured yet...
-  if (pins[pin] == null) {
-    pinMode(pin, Command.toMode(command));
-  }
-
-  Reporting.pins.append(pins[pin]);
 
   if (Reporting.isActive()) {
     Reporting.update();
@@ -237,7 +241,7 @@ agent.on("report", function(data) {
 agent.on("payload", function(rawdata) {
   local dataArray = toArray(rawdata);
 
-  foreach(idx, data in dataArray) {
+    foreach(idx, data in dataArray) {
     local bytes = toBytes(data);
     local command = bytes[0];
     local pin = bytes.len() >= 2 ? bytes[1] : null;
