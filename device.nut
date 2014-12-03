@@ -95,7 +95,8 @@ Write <- {
   }
 
   SERVO_WRITE = function(pin, value) {
-    local duty = scale(value, 0.0, 180.0, 0.03, 1.0);
+
+    local duty = scale(value, 0.0, 180.0, 0.03, 0.1);
 
     if (pins[pin] == null) {
       pinMode(pin, MODES[4]);
@@ -227,12 +228,12 @@ agent.on("report", function(rawdata) {
 
     // If this pin hasn't been configured yet...
     if (pins[pin] == null) {
-        pinMode(pin, Command.toMode(command));
+      pinMode(pin, Command.toMode(command));
     }
 
     Reporting.pins.append(pins[pin]);
 
-    }
+  }
 
   if (Reporting.isActive()) {
     Reporting.update();
