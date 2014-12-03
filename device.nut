@@ -95,7 +95,7 @@ Write <- {
   }
 
   SERVO_WRITE = function(pin, value) {
-    local duty = scale(value, 0.0, 180.0, 0.03, 1.0);
+    local duty = scale(value, 0.0, 180.0, 0.03, 0.1);
 
     if (pins[pin] == null) {
       pinMode(pin, MODES[4]);
