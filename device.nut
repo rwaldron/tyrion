@@ -210,13 +210,14 @@ pins <- array(32, null);
 
 agent.on("report", function(rawdata) {
   local dataArray = toArray(rawdata);
-  foreach(idx, data in dataArray) {
+
+  foreach (idx, data in dataArray) {
     local bytes = toBytes(data);
     local command;
     local pin;
 
     if (bytes.len() != 2) {
-        return;
+      return;
     }
 
     command = bytes[0];
@@ -231,7 +232,7 @@ agent.on("report", function(rawdata) {
 
     Reporting.pins.append(pins[pin]);
 
-  }
+    }
 
   if (Reporting.isActive()) {
     Reporting.update();
@@ -241,43 +242,42 @@ agent.on("report", function(rawdata) {
 agent.on("payload", function(rawdata) {
   local dataArray = toArray(rawdata);
 
-    foreach(idx, data in dataArray) {
+  foreach (idx, data in dataArray) {
     local bytes = toBytes(data);
     local command = bytes[0];
     local pin = bytes.len() >= 2 ? bytes[1] : null;
 
-      if (command in commands) {
-        server.log(hardware.millis() + " " + commands[command]);
-      }
+    if (command in commands) {
+      server.log(hardware.millis() + " " + commands[command]);
+    }
 
-      switch (command) {
-        case PIN_MODE:
-          pinMode(pin, bytes[2]);
-          break;
+    switch (command) {
+      case PIN_MODE:
+        pinMode(pin, bytes[2]);
+        break;
 
-        case ANALOG_WRITE:
-        case SERVO_WRITE:
-        case DIGITAL_WRITE:
-          Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
-          break;
+      case ANALOG_WRITE:
+      case SERVO_WRITE:
+      case DIGITAL_WRITE:
+        Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
+        break;
 
-        case SYSTEM_RESET:
-          systemReset();
-          break;
+      case SYSTEM_RESET:
+        systemReset();
+        break;
 
-        default:
-          // server.log("hit default, likely an invalid command");
-          server.log("-----------------------------------------");
-      }
+      default:
+        // server.log("hit default, likely an invalid command");
+        server.log("-----------------------------------------");
+    }
   }
-
 });
 
 function systemReset() {
   // Enable blinkup while resetting.
   imp.enableblinkup(true);
 
-  foreach(index, pin in pins) {
+  foreach (index, pin in pins) {
     if (pin != null) {
       // Set pin to output and low
       pin.configure(DIGITAL_OUT);
