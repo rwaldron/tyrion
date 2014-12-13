@@ -10,9 +10,13 @@ http.onrequest(function(request, response) {
     device.send("report", request.query.report);
   }
 
-  // All requests receive the current reporting
-  // state as a response.
-  response.send(200, serialize(report));
+  // All "non-connect" requests receive the current
+  // reporting state as a response.
+  if (device.isconnected()) {
+    response.send(200, serialize(report));
+  } else {
+    response.send(500, "Internal Server Error: Device not connected");
+  }
 });
 
 device.on("update", function(data) {
