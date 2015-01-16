@@ -1,5 +1,7 @@
 # Tyrion
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/rwaldron/tyrion?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Tyrion is an agent/device pair for controlling an [Electric Imp](https://electricimp.com/) from a remote machine with [Johnny-Five](https://github.com/rwaldron/johnny-five) and [Imp-IO](https://github.com/rwaldron/imp-io). 
 
 ## Getting Started
