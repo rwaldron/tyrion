@@ -95,7 +95,13 @@ Write <- {
   }
 
   SERVO_WRITE = function(pin, value) {
-    local duty = scale(value, 0.0, 180.0, 0.03, 0.1);
+    local duty;
+    
+    if (value < 544) {
+      duty = scale(constrain(value, 0, 180), 0.0, 180.0, 0.03, 0.1);
+    } else {
+      duty = scale(value, 600, 2400, 0.03, 0.1);
+    }
 
     if (pins[pin] == null) {
       pinMode(pin, MODES[4]);
@@ -297,6 +303,16 @@ function systemReset() {
 
 function scale(value, fromLow, fromHigh, toLow, toHigh) {
   return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+}
+
+function constrain(value, low, high) {
+  if (value < low)
+    return low;
+
+  if (value > high)
+    return high;
+
+  return value;
 }
 
 function from7BitBytes(lsb, msb) {
