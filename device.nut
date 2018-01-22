@@ -1,6 +1,7 @@
 const PIN_MODE = 0xF4;
 const ANALOG_WRITE = 0xE0;
 const SERVO_WRITE = 0xE1;
+const SERVO_CONFIG = 0x70;
 const DIGITAL_WRITE = 0x90;
 const REPORT_ANALOG = 0xC0;
 const REPORT_DIGITAL = 0xD0;
@@ -20,6 +21,7 @@ commands <- array(256, null);
 commands[0xF4] = "PIN_MODE";
 commands[0xE0] = "ANALOG_WRITE";
 commands[0xE1] = "SERVO_WRITE";
+commands[0x70] = "SERVO_CONFIG";
 commands[0x90] = "DIGITAL_WRITE";
 commands[0xC0] = "REPORT_ANALOG";
 commands[0xD0] = "REPORT_DIGITAL";
@@ -98,10 +100,12 @@ Write <- {
     local duty;
     
     if (value < 544) {
-      duty = scale(constrain(value, 0, 180), 0.0, 180.0, 0.03, 0.1);
+      duty = scale(constrain(value, 0, 180), 0.0, 180.0, pins[pin].servoMin, pins[pin].servoMax);
     } else {
-      duty = scale(value, 600, 2400, 0.03, 0.1);
+      duty = constrain(value, pins[pin].servoMin, pins[pin].servoMax)
     }
+    
+    duty = scale(duty, 600, 2400, 0.03, 0.12);
 
     if (pins[pin] == null) {
       pinMode(pin, MODES[4]);
@@ -152,11 +156,15 @@ class Pin {
   value = null;
   period = null;
   duty = null;
+  servoMin = null;
+  servoMax = null;
 
   constructor(h, n = 0, m = 0, ) {
     hardware = h;
     number = n;
     mode = m;
+    servoMin = 600;
+    servoMax = 2400;
   }
 
   function read() {
@@ -181,6 +189,7 @@ class Pin {
       hardware.configure(m);
     }
   }
+  
 }
 
 function pinMode(pin, mode) {
@@ -208,6 +217,13 @@ function pinMode(pin, mode) {
         pins[pin].configure(impMode);
       }
     }
+  }
+}
+
+function servoConfig(pin, min, max) {
+  if (pins[pin] != null) {
+    pins[pin].servoMin = min;
+    pins[pin].servoMax = max;
   }
 }
 
@@ -268,6 +284,10 @@ agent.on("payload", function(rawdata) {
         Write[commands[command]](pin, from7BitBytes(bytes[2], bytes[3]));
         break;
 
+      case SERVO_CONFIG:
+        servoConfig( pin, bytes[2], bytes[3] );
+        break;
+
       case SYSTEM_RESET:
         systemReset();
         break;
@@ -278,6 +298,7 @@ agent.on("payload", function(rawdata) {
     }
   }
 });
+
 
 function systemReset() {
   // Enable blinkup while resetting.
